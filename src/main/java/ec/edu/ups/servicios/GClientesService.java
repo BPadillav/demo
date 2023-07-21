@@ -9,8 +9,10 @@ import ec.edu.ups.ppw.datos.VehiculoDAO;
 import ec.edu.ups.ppw.modelo.Persona;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -90,7 +92,7 @@ public class GClientesService {
 		}
 	}*/
 	
-	@GET
+	@POST
 	@Path("personas1")
 	@Produces("application/json")
 	@Consumes("application/json")
@@ -111,5 +113,53 @@ public class GClientesService {
 	public List<Persona> getPersonas() {
 	    return daoPersona.getAll();
 	}
+	
+	@GET
+	@Path("all")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response getClientes() {
+		
+		List <Persona> listado = gClientes.getClientes();
+		return Response.status(Response.Status.OK).entity(listado).build();		
+	}
+	
+	@PUT
+	@Path("actualizar")
+	@Produces("application/json")
+	@Consumes("application/json")
+	public Response actualizarPersona( Persona persona) {
+	    try {
+	        gClientes.actualizarPersona(persona);
+	        List<Persona> personas = getPersonas();
+	        return Response.status(Response.Status.OK).entity(personas).build();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        Error error = new Error();
+	        error.setCodigo(99);
+	        error.setMensaje("Error al actualizar: " + e.getMessage());
+	        return Response.status(Response.Status.OK).entity(error).build();
+	    }
+	}
+	
+	@DELETE
+	@Path("eliminar")
+	@Consumes("application/json")
+	@Produces("application/json")
+	public Response eliminarPersona(Persona persona) {
+		try {
+			gClientes.eliminarPersona(persona.getCedula());
+			//return Response.status(Response.Status.OK).entity("Persona eliminada correctamente.").build();
+	        return Response.status(Response.Status.OK).entity(persona).build();
 
+		} catch (Exception e) {
+			e.printStackTrace();
+			Error error = new Error();
+			error.setCodigo(99);
+			error.setMensaje("Error al eliminar: " + e.getMessage());
+			//return Response.status(Response.Status.OK).entity(error).build();
+	        return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(error).build();
+
+		}
+	}
 }

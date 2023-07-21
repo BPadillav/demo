@@ -21,7 +21,6 @@ public class PersonaDAO implements Serializable{
 	private EntityManager em;
 	
 	public void insert (Persona persona) {
-		
 		em.persist(persona);
 	}
 	
@@ -36,11 +35,16 @@ public class PersonaDAO implements Serializable{
 		
 	}
 	
-	public void delete (String cedula) {
-		
+	public Persona read(String cedula) {
 		Persona p = em.find(Persona.class, cedula);
-		em.remove(p);
-				
+		return p;
+		
+	}
+	
+	public void delete(String cedula) {
+	    Query query = em.createQuery("DELETE FROM Persona p WHERE p.cedula = :cedula");
+	    query.setParameter("cedula", cedula);
+	    query.executeUpdate();
 	}
 
 	public List<Persona> getAll(){
